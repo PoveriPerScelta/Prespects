@@ -128,48 +128,6 @@
         <div class="divider" aria-hidden="true"></div>
 
         <div class="section">
-          <div class="field">
-            <label for="motivoInteresse">Per quale motivo sei interessato/a?</label>
-            <p class="hint">
-              Qualche spunto: cosa ti manca oggi — libertà di tempo, indipendenza
-              economica, una svolta professionale? Cosa ti ha spinto/a a cercare
-              qualcosa di nuovo proprio adesso?
-            </p>
-            <textarea
-              id="motivoInteresse"
-              formControlName="motivoInteresse"
-              rows="4"
-              placeholder="Racconta con parole tue cosa ti ha portato/a fin qui..."
-            ></textarea>
-            @if (errorFor('motivoInteresse'); as msg) {
-              <span class="field-error">{{ msg }}</span>
-            }
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="field">
-            <label for="ramoInteresse">Ramo che ti interessa di più</label>
-            <p class="hint">
-              Qualche esempio: trading, investimenti a lungo termine, network
-              marketing, oppure conoscere persone con i tuoi stessi interessi e
-              magari avviare un'attività insieme.
-            </p>
-            <textarea
-              id="ramoInteresse"
-              formControlName="ramoInteresse"
-              rows="4"
-              placeholder="Descrivi l'ambito che ti attira di più e perché..."
-            ></textarea>
-            @if (errorFor('ramoInteresse'); as msg) {
-              <span class="field-error">{{ msg }}</span>
-            }
-          </div>
-        </div>
-
-        <div class="divider" aria-hidden="true"></div>
-
-        <div class="section">
           <p class="section-title">Occupazione attuale</p>
 
           <fieldset class="radio-group">
@@ -223,7 +181,45 @@
         <div class="divider" aria-hidden="true"></div>
 
         <div class="section">
+          <p class="section-title">Conosciamoci un po'</p>
+
           <div class="field">
+            <label for="motivoInteresse">Per quale motivo sei interessato/a?</label>
+            <p class="hint">
+              Qualche spunto: cosa ti manca oggi — libertà di tempo, indipendenza
+              economica, una svolta professionale? Cosa ti ha spinto/a a cercare
+              qualcosa di nuovo proprio adesso?
+            </p>
+            <textarea
+              id="motivoInteresse"
+              formControlName="motivoInteresse"
+              rows="4"
+              placeholder="Racconta con parole tue cosa ti ha portato/a fin qui..."
+            ></textarea>
+            @if (errorFor('motivoInteresse'); as msg) {
+              <span class="field-error">{{ msg }}</span>
+            }
+          </div>
+
+          <div class="field field--inline">
+            <label for="ramoInteresse">Ramo che ti interessa di più</label>
+            <p class="hint">
+              Qualche esempio: trading, investimenti a lungo termine, network
+              marketing, oppure conoscere persone con i tuoi stessi interessi e
+              magari avviare un'attività insieme.
+            </p>
+            <textarea
+              id="ramoInteresse"
+              formControlName="ramoInteresse"
+              rows="4"
+              placeholder="Descrivi l'ambito che ti attira di più e perché..."
+            ></textarea>
+            @if (errorFor('ramoInteresse'); as msg) {
+              <span class="field-error">{{ msg }}</span>
+            }
+          </div>
+
+          <div class="field field--inline">
             <label for="obiettivi">Obiettivi — i tuoi sogni e desideri attuali</label>
             <p class="hint">
               Dove ti vedi tra qualche anno? Cosa vorresti poterti finalmente
