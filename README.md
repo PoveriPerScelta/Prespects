@@ -1,6 +1,31 @@
 # FormProspects
 
+Form di contatto "Inizia il Tuo Percorso" — candidature per un percorso di
+crescita personale e network marketing. Frontend puro Angular, nessun
+backend da hostare: l'invio email è gestito da [EmailJS](https://www.emailjs.com)
+(vedi [email-config.ts](src/app/contact-form/email-config.ts) per la
+configurazione e le istruzioni di setup).
+
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.0.
+
+## Pubblicazione su GitHub Pages
+
+Il deploy è automatico: ogni push sul branch `main` fa partire il workflow
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), che builda
+il sito e lo pubblica su GitHub Pages. Non serve lanciare nessun comando
+manuale, basta:
+
+1. **Nel repository su GitHub** ([PoveriPerScelta/Prespects](https://github.com/PoveriPerScelta/Prespects))
+   → Settings → Pages → alla voce "Build and deployment" → "Source" scegli
+   **GitHub Actions** (va fatto una sola volta, la prima volta).
+2. Push su `main` → dopo qualche minuto il sito è live su
+   **https://poveriperscelta.github.io/Prespects/**.
+
+Puoi seguire l'avanzamento del deploy nella tab **Actions** del repository.
+
+⚠️ **Importante per EmailJS**: vai su EmailJS → Account → Security →
+Allowed origins e aggiungi `https://poveriperscelta.github.io`, così la
+Public Key funziona solo dal sito pubblicato.
 
 ## Development server
 

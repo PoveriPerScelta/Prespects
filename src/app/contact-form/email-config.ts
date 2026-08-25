@@ -32,16 +32,17 @@
  *  6. Incolla i tre valori qui sotto al posto dei placeholder, poi
  *     ricompila/ripubblica il sito (npm run build).
  *  7. (Consigliato) In "Account" → "Security" → "Allowed origins" inserisci
- *     il dominio dove pubblicherai il form, così la Public Key funziona
+ *     https://poveriperscelta.github.io (il sito sarà pubblicato su GitHub
+ *     Pages a quell'indirizzo, vedi README.md), così la Public Key funziona
  *     solo dal tuo sito e non può essere riusata da altri.
  *
  * Finché i placeholder non vengono sostituiti, il form mostra comunque un
  * messaggio d'errore gentile con un link "scrivici via email" di riserva,
  * così nessuna candidatura va persa.
  */
-export const EMAILJS_SERVICE_ID = 'REPLACE_WITH_YOUR_EMAILJS_SERVICE_ID';
-export const EMAILJS_TEMPLATE_ID = 'REPLACE_WITH_YOUR_EMAILJS_TEMPLATE_ID';
-export const EMAILJS_PUBLIC_KEY = 'REPLACE_WITH_YOUR_EMAILJS_PUBLIC_KEY';
+export const EMAILJS_SERVICE_ID = 'service_jwg1y54';      // ← il tuo Service ID
+export const EMAILJS_TEMPLATE_ID = 'template_cvr07kc';    // ← il tuo Template ID
+export const EMAILJS_PUBLIC_KEY = 'DrcIK1xMuhlAnty7x';    // ← la tua Public Key
 
 export const EMAILJS_ENDPOINT = 'https://api.emailjs.com/api/v1.0/email/send';
 
