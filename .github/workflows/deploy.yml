@@ -28,7 +28,12 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      # "npm ci" invece di "npm install" sarebbe più rigoroso, ma qui fallisce:
+      # alcune dipendenze opzionali (@emnapi/*, usate come fallback WASM da
+      # @napi-rs/wasm-runtime) vengono risolte solo su Linux e non compaiono
+      # nel lockfile generato su macOS, dove esiste il binario nativo e il
+      # fallback non serve. "npm install" le risolve correttamente qui.
+      - run: npm install
 
       # --base-href usa il nome del repository, così l'URL del progetto
       # (https://<utente>.github.io/<repo>/) funziona anche se il repo
