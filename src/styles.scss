@@ -1,1 +1,49 @@
-/* You can add global styles to this file, and also import other style files */
+/* Stili globali — palette "midnightblue & gold" */
+
+:root {
+  --mn-950: #060a1a;
+  --mn-900: #0a1130;
+  --mn-850: #0d1638;
+  --mn-800: #101c46;
+  --mn-700: #172a5e;
+  --mn-600: #22397a;
+
+  --gold-300: #f5dfa0;
+  --gold-400: #e8c766;
+  --gold-500: #d4af37;
+  --gold-600: #b6902a;
+
+  --cream: #f5f1e6;
+  --muted: #a9b4d1;
+  --muted-2: #7c88ab;
+  --danger: #ff8fa3;
+
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* Scroll nativo, senza librerie: il modo più fluido possibile. */
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  /* Solo min-height, MAI height:100% qui: "height:100%" blocca body
+     esattamente all'altezza del viewport invece di lasciarlo crescere col
+     contenuto, impedendo di fatto lo scroll su pagine più alte di una
+     schermata (bug verificato: con height:100% il documento restava
+     fermo a 800px anche con ~2000px di contenuto). min-height copre le
+     pagine corte e lascia crescere liberamente quelle lunghe come questa. */
+  min-height: 100vh;
+  background: radial-gradient(ellipse at top, var(--mn-850) 0%, var(--mn-950) 55%, #030614 100%);
+  color: var(--cream);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,278 @@
+<div class="page">
+  <div class="glow glow--one" aria-hidden="true"></div>
+  <div class="glow glow--two" aria-hidden="true"></div>
+
+  <div class="card-wrap">
+    @if (state() === 'success') {
+      <section class="success" role="status">
+        <div class="success__mark" aria-hidden="true">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="26" cy="26" r="25" stroke="currentColor" stroke-width="1.5" />
+            <path d="M15 27.5 22.5 35 37 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <p class="eyebrow">Candidatura inviata</p>
+        <h1>Grazie per esserti aperto/a con noi</h1>
+        <p class="lead">
+          Abbiamo ricevuto la tua candidatura. La leggeremo con attenzione e ti
+          ricontatteremo al più presto per parlare insieme del tuo percorso.
+        </p>
+        <button type="button" class="ghost-btn" (click)="startOver()">
+          Invia un'altra candidatura
+        </button>
+      </section>
+    } @else {
+      <header class="intro">
+        <p class="eyebrow">Percorso di Crescita &amp; Network Marketing</p>
+        <h1>Inizia il Tuo Percorso</h1>
+        <p class="lead">
+          Raccontaci chi sei e cosa cerchi: ogni grande cambiamento comincia da
+          una scelta consapevole. Compila il modulo, ti ricontatteremo
+          personalmente.
+        </p>
+      </header>
+
+      <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="section">
+          <p class="section-title">I tuoi dati</p>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="nome">Nome</label>
+              <input id="nome" type="text" formControlName="nome" autocomplete="given-name" placeholder="Es. Maria" />
+              @if (errorFor('nome'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              }
+            </div>
+
+            <div class="field">
+              <label for="cognome">Cognome</label>
+              <input id="cognome" type="text" formControlName="cognome" autocomplete="family-name" placeholder="Es. Rossi" />
+              @if (errorFor('cognome'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="eta">Età</label>
+              <input id="eta" type="number" formControlName="eta" [attr.min]="etaMinima" max="99" inputmode="numeric" placeholder="Es. 29" />
+              @if (etaTroppoBassa) {
+                <div class="notice-card notice-card--tight" role="alert">
+                  <p>Ci dispiace, devi avere almeno {{ etaMinima }} anni per entrare a far parte di questo percorso.</p>
+                </div>
+              } @else if (errorFor('eta'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              } @else {
+                <span class="hint hint--tight">Età minima richiesta: {{ etaMinima }} anni.</span>
+              }
+            </div>
+
+            <div class="field">
+              <label for="telefono">Numero di telefono</label>
+              <input id="telefono" type="tel" formControlName="telefono" autocomplete="tel" placeholder="Es. +39 333 1234567" />
+              @if (errorFor('telefono'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="grid grid-1">
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" formControlName="email" autocomplete="email" placeholder="nome.cognome@esempio.com" />
+              @if (errorFor('email'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="divider" aria-hidden="true"></div>
+
+        <div class="section">
+          <p class="section-title">Da dove vieni?</p>
+
+          <div class="grid grid-3">
+            <div class="field">
+              <label for="nazione">Nazione</label>
+              <select id="nazione" formControlName="nazione">
+                @for (paese of nazioni; track paese) {
+                  <option [value]="paese">{{ paese }}</option>
+                }
+              </select>
+              @if (errorFor('nazione'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              }
+            </div>
+
+            <div class="field">
+              <label for="provincia">Provincia</label>
+              <input id="provincia" type="text" formControlName="provincia" placeholder="Es. Milano (MI)" />
+              @if (errorFor('provincia'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              }
+            </div>
+
+            <div class="field">
+              <label for="citta">Paese / Città</label>
+              <input id="citta" type="text" formControlName="citta" placeholder="Es. Monza" />
+              @if (errorFor('citta'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="divider" aria-hidden="true"></div>
+
+        <div class="section">
+          <div class="field">
+            <label for="motivoInteresse">Per quale motivo sei interessato/a?</label>
+            <p class="hint">
+              Qualche spunto: cosa ti manca oggi — libertà di tempo, indipendenza
+              economica, una svolta professionale? Cosa ti ha spinto/a a cercare
+              qualcosa di nuovo proprio adesso?
+            </p>
+            <textarea
+              id="motivoInteresse"
+              formControlName="motivoInteresse"
+              rows="4"
+              placeholder="Racconta con parole tue cosa ti ha portato/a fin qui..."
+            ></textarea>
+            @if (errorFor('motivoInteresse'); as msg) {
+              <span class="field-error">{{ msg }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="field">
+            <label for="ramoInteresse">Ramo che ti interessa di più</label>
+            <p class="hint">
+              Qualche esempio: trading, investimenti a lungo termine, network
+              marketing, oppure conoscere persone con i tuoi stessi interessi e
+              magari avviare un'attività insieme.
+            </p>
+            <textarea
+              id="ramoInteresse"
+              formControlName="ramoInteresse"
+              rows="4"
+              placeholder="Descrivi l'ambito che ti attira di più e perché..."
+            ></textarea>
+            @if (errorFor('ramoInteresse'); as msg) {
+              <span class="field-error">{{ msg }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="divider" aria-hidden="true"></div>
+
+        <div class="section">
+          <p class="section-title">Occupazione attuale</p>
+
+          <fieldset class="radio-group">
+            <legend class="sr-only">Occupazione attuale</legend>
+
+            <label class="radio-card" [class.is-checked]="form.controls.occupazione.value === 'studente'">
+              <input type="radio" formControlName="occupazione" value="studente" />
+              <span>Studente/essa</span>
+            </label>
+
+            <label class="radio-card" [class.is-checked]="form.controls.occupazione.value === 'lavoratore'">
+              <input type="radio" formControlName="occupazione" value="lavoratore" />
+              <span>Lavoratore/trice</span>
+            </label>
+          </fieldset>
+          @if (errorFor('occupazione'); as msg) {
+            <span class="field-error">{{ msg }}</span>
+          }
+
+          @if (isLavoratore) {
+            <div class="field field--inline">
+              <label for="professione">Qual è la tua professione?</label>
+              <input
+                id="professione"
+                type="text"
+                formControlName="professione"
+                placeholder="Es. Commerciante, impiegata, libero professionista..."
+              />
+              @if (errorFor('professione'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              }
+            </div>
+          }
+
+          @if (isStudente) {
+            <div class="field field--inline">
+              <label for="percorsoStudi">Cosa stai studiando?</label>
+              <input
+                id="percorsoStudi"
+                type="text"
+                formControlName="percorsoStudi"
+                placeholder="Es. Liceo scientifico, Economia, Ingegneria..."
+              />
+              @if (errorFor('percorsoStudi'); as msg) {
+                <span class="field-error">{{ msg }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="divider" aria-hidden="true"></div>
+
+        <div class="section">
+          <div class="field">
+            <label for="obiettivi">Obiettivi — i tuoi sogni e desideri attuali</label>
+            <p class="hint">
+              Dove ti vedi tra qualche anno? Cosa vorresti poterti finalmente
+              permettere, per te o per le persone a cui vuoi bene?
+            </p>
+            <textarea
+              id="obiettivi"
+              formControlName="obiettivi"
+              rows="4"
+              placeholder="I tuoi sogni, i tuoi obiettivi, ciò per cui vale la pena metterti in gioco..."
+            ></textarea>
+            @if (errorFor('obiettivi'); as msg) {
+              <span class="field-error">{{ msg }}</span>
+            }
+          </div>
+        </div>
+
+        <label class="privacy">
+          <input type="checkbox" formControlName="privacy" class="privacy-input" />
+          <span class="checkbox-box" aria-hidden="true">
+            <svg class="checkbox-tick" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8.5 6.2 11.5 13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <span class="privacy-text">
+            Acconsento al trattamento dei miei dati personali ai sensi del
+            Regolamento UE 2016/679 (GDPR) al solo scopo di essere ricontattato/a
+            in merito a questa candidatura.
+          </span>
+        </label>
+        @if (errorFor('privacy'); as msg) {
+          <span class="field-error">{{ msg }}</span>
+        }
+
+        @if (state() === 'error') {
+          <div class="notice-card" role="alert">
+            <p>Non è stato possibile inviare la candidatura in automatico.</p>
+            <a [href]="mailtoFallback()">Scrivici direttamente via email →</a>
+          </div>
+        }
+
+        <button type="submit" class="submit" [disabled]="state() === 'submitting'">
+          @if (state() === 'submitting') {
+            Invio in corso…
+          } @else {
+            Invia la tua candidatura
+          }
+        </button>
+      </form>
+    }
+  </div>
+</div>
