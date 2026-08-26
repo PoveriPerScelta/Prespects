@@ -10,6 +10,16 @@
      non gestisca affatto il tema scuro. */
   color-scheme: light;
 
+  /* Diverso dal problema sopra: qui si dice al browser di NON sostituire
+     mai i nostri colori con una propria tavolozza "a contrasto forzato".
+     Alcuni browser (in particolare, a quanto riportato, Samsung Internet)
+     mantengono una modalità di questo tipo che può attivarsi proprio nel
+     momento in cui la pagina cambia tema esplicitamente — cioè quando si
+     preme il tasto del tema — sovrapponendo un secondo set di colori che
+     non corrisponde più alla nostra palette. forced-color-adjust:none è lo
+     standard per disattivarla e lasciare sempre i colori scelti da noi. */
+  forced-color-adjust: none;
+
   /* --- Chiaro: Amber Hearth --- */
   --bg: #fbecdb;
   --surface: #fffaf3;
