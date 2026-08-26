@@ -1,0 +1,48 @@
+:host {
+  position: fixed;
+  right: clamp(1rem, 4vw, 1.75rem);
+  bottom: clamp(1rem, 4vw, 1.75rem);
+  z-index: 40;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  background: var(--surface);
+  color: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.theme-toggle svg {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.42);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle {
+    transition: none;
+  }
+}

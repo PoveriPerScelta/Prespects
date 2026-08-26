@@ -40,8 +40,8 @@
   height: 34rem;
   top: -12rem;
   left: -10rem;
-  opacity: 0.4;
-  background: radial-gradient(circle, var(--gold-500), transparent 60%);
+  opacity: 0.35;
+  background: radial-gradient(circle, var(--accent), transparent 60%);
 }
 
 .glow--two {
@@ -49,8 +49,8 @@
   height: 30rem;
   bottom: -10rem;
   right: -8rem;
-  opacity: 0.5;
-  background: radial-gradient(circle, var(--mn-600), transparent 60%);
+  opacity: 0.4;
+  background: radial-gradient(circle, var(--accent-2), transparent 60%);
 }
 
 .card-wrap {
@@ -70,7 +70,7 @@
   letter-spacing: 0.22em;
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--gold-400);
+  color: var(--accent);
   margin: 0 0 0.85rem;
 }
 
@@ -78,14 +78,14 @@
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: clamp(2rem, 5vw, 2.85rem);
-  color: var(--cream);
+  color: var(--ink);
   margin: 0 0 1rem;
   letter-spacing: 0.01em;
 }
 
 .lead {
   font-family: var(--font-body);
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: 1rem;
   line-height: 1.65;
   max-width: 46rem;
@@ -96,16 +96,13 @@
   display: flex;
   flex-direction: column;
   gap: 1.75rem;
-  /* Niente backdrop-filter: è pesante da ricalcolare durante lo scroll ed
-     è la causa più comune di scatti/jank su card sovrapposte a sfondi
-     grandi. Un gradiente pieno dà comunque profondità restando leggero. */
-  background: linear-gradient(180deg, rgba(23, 42, 94, 0.55), rgba(8, 13, 32, 0.82));
-  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
   border-radius: 22px;
   padding: clamp(1.5rem, 4vw, 3rem);
   box-shadow:
-    0 30px 80px -30px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 30px 80px -30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .section-title {
@@ -117,7 +114,7 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--gold-400);
+  color: var(--accent);
   margin: 0 0 1.1rem;
 }
 
@@ -125,12 +122,17 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, rgba(212, 175, 55, 0.5), transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 50%, transparent), transparent);
 }
 
 .divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.35), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 35%, transparent),
+    transparent
+  );
 }
 
 .grid {
@@ -173,14 +175,14 @@
 .field label {
   font-size: 0.82rem;
   letter-spacing: 0.03em;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-weight: 600;
 }
 
 .hint {
   margin: 0.1rem 0 0.35rem;
   font-size: 0.82rem;
-  color: var(--muted-2);
+  color: var(--ink-faint);
   line-height: 1.55;
   font-style: italic;
 }
@@ -199,9 +201,9 @@ textarea {
   width: 100%;
   font-family: var(--font-body);
   font-size: 0.95rem;
-  color: var(--cream);
-  background: rgba(6, 10, 26, 0.45);
-  border: 1px solid rgba(169, 180, 209, 0.25);
+  color: var(--ink);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: 10px;
   padding: 0.75rem 0.9rem;
   outline: none;
@@ -213,21 +215,22 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: rgba(169, 180, 209, 0.45);
+  color: var(--placeholder);
+  opacity: 0.75;
 }
 
 input:hover,
 select:hover,
 textarea:hover {
-  border-color: rgba(212, 175, 55, 0.4);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--gold-500);
-  background: rgba(6, 10, 26, 0.65);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 select {
@@ -235,12 +238,15 @@ select {
   padding-right: 2.4rem;
   background-repeat: no-repeat;
   background-position: right 0.9rem center;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  /* Il colore della freccia (che qui non compare) vive in styles.scss,
+     globale: un'immagine di sfondo incorporata non può leggere le custom
+     property, quindi serve un file non soggetto allo scoping dei
+     componenti per poterla far variare in base al tema. */
 }
 
 select option {
-  color: #111;
-  background: #fff;
+  color: var(--ink);
+  background: var(--surface);
 }
 
 textarea {
@@ -251,7 +257,7 @@ textarea {
 
 .field-error {
   font-size: 0.78rem;
-  color: var(--danger);
+  color: var(--danger-ink);
   margin-top: 0.15rem;
 }
 
@@ -273,9 +279,9 @@ textarea {
   justify-content: center;
   gap: 0.6rem;
   padding: 0.85rem 1.4rem;
-  border: 1px solid rgba(169, 180, 209, 0.25);
+  border: 1px solid var(--field-border);
   border-radius: 12px;
-  background: rgba(6, 10, 26, 0.35);
+  background: var(--field-bg);
   cursor: pointer;
   transition:
     border-color 0.2s ease,
@@ -287,7 +293,7 @@ textarea {
   font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 
 .radio-card input {
@@ -296,17 +302,17 @@ textarea {
 }
 
 .radio-card:hover {
-  border-color: rgba(212, 175, 55, 0.5);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
 }
 
 .radio-card.is-checked {
-  border-color: var(--gold-500);
-  background: rgba(212, 175, 55, 0.1);
-  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.35);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--field-bg));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 .radio-card.is-checked span {
-  color: var(--gold-300);
+  color: var(--accent);
 }
 
 .privacy {
@@ -338,8 +344,8 @@ textarea {
   align-items: center;
   justify-content: center;
   border-radius: 7px;
-  border: 1.5px solid rgba(169, 180, 209, 0.4);
-  background: rgba(6, 10, 26, 0.5);
+  border: 1.5px solid var(--field-border);
+  background: var(--field-bg);
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -349,7 +355,7 @@ textarea {
 .checkbox-tick {
   width: 0.85rem;
   height: 0.85rem;
-  color: #1a1204;
+  color: var(--cta-text);
   opacity: 0;
   transform: scale(0.5);
   transition:
@@ -358,13 +364,13 @@ textarea {
 }
 
 .privacy:hover .checkbox-box {
-  border-color: rgba(212, 175, 55, 0.6);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
 .privacy-input:checked ~ .checkbox-box {
-  background: linear-gradient(135deg, var(--gold-300), var(--gold-500) 60%, var(--gold-600));
-  border-color: var(--gold-500);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent) 60%, var(--accent-3));
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .privacy-input:checked ~ .checkbox-box .checkbox-tick {
@@ -373,22 +379,22 @@ textarea {
 }
 
 .privacy-input:focus-visible ~ .checkbox-box {
-  outline: 2px solid var(--gold-400);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
 .privacy-text {
   font-size: 0.8rem;
   line-height: 1.55;
-  color: var(--muted-2);
+  color: var(--ink-faint);
 }
 
 .notice-card {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  border: 1px solid rgba(255, 143, 163, 0.4);
-  background: rgba(255, 143, 163, 0.08);
+  border: 1px solid var(--danger-line);
+  background: var(--danger-bg);
   border-radius: 12px;
   padding: 1rem 1.2rem;
 }
@@ -396,14 +402,14 @@ textarea {
 .notice-card p {
   margin: 0;
   font-size: 0.85rem;
-  color: #ffc2cf;
+  color: var(--danger-ink);
   line-height: 1.5;
 }
 
 .notice-card a {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--gold-300);
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -423,13 +429,13 @@ textarea {
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.04em;
-  color: #1a1204;
-  background: linear-gradient(135deg, var(--gold-300), var(--gold-500) 55%, var(--gold-600));
+  color: var(--cta-text);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent) 55%, var(--accent-3));
   border: 0;
   border-radius: 999px;
   padding: 0.95rem 2.6rem;
   cursor: pointer;
-  box-shadow: 0 15px 35px -12px rgba(212, 175, 55, 0.55);
+  box-shadow: 0 15px 35px -12px color-mix(in srgb, var(--accent) 55%, transparent);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -438,7 +444,7 @@ textarea {
 
 .submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 20px 45px -14px rgba(212, 175, 55, 0.65);
+  box-shadow: 0 20px 45px -14px color-mix(in srgb, var(--accent) 65%, transparent);
 }
 
 .submit:disabled {
@@ -453,16 +459,16 @@ textarea {
   gap: 1rem;
   text-align: center;
   padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 4vw, 3rem);
-  background: linear-gradient(180deg, rgba(23, 42, 94, 0.55), rgba(8, 13, 32, 0.82));
-  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
   border-radius: 22px;
-  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.35);
 }
 
 .success__mark {
   width: 4rem;
   height: 4rem;
-  color: var(--gold-400);
+  color: var(--accent);
 }
 
 .success__mark svg {
@@ -473,7 +479,7 @@ textarea {
 .success h1 {
   font-family: var(--font-heading);
   font-size: clamp(1.6rem, 4vw, 2.2rem);
-  color: var(--cream);
+  color: var(--ink);
   margin: 0.25rem 0;
 }
 
@@ -485,9 +491,9 @@ textarea {
   margin-top: 1rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-  color: var(--gold-300);
+  color: var(--accent);
   background: transparent;
-  border: 1px solid rgba(212, 175, 55, 0.5);
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
   border-radius: 999px;
   padding: 0.75rem 1.75rem;
   cursor: pointer;
@@ -497,8 +503,8 @@ textarea {
 }
 
 .ghost-btn:hover {
-  background: rgba(212, 175, 55, 0.1);
-  border-color: var(--gold-500);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: var(--accent);
 }
 
 .sr-only {

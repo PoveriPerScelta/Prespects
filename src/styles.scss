@@ -1,26 +1,69 @@
-/* Stili globali — palette "midnightblue & gold" */
+/* Stili globali — palette "Amber Hearth" (chiaro) / "Champagne & Gold" (scuro) */
 
 :root {
-  --mn-950: #060a1a;
-  --mn-900: #0a1130;
-  --mn-850: #0d1638;
-  --mn-800: #101c46;
-  --mn-700: #172a5e;
-  --mn-600: #22397a;
-
-  --gold-300: #f5dfa0;
-  --gold-400: #e8c766;
-  --gold-500: #d4af37;
-  --gold-600: #b6902a;
-
-  --cream: #f5f1e6;
-  --muted: #a9b4d1;
-  --muted-2: #7c88ab;
-  --danger: #ff8fa3;
+  /* --- Chiaro: Amber Hearth --- */
+  --bg: #fbecdb;
+  --surface: #fffaf3;
+  --surface-border: #f0d6ae;
+  --ink: #4a2c10;
+  --ink-muted: #93704a;
+  --ink-faint: #ab8455;
+  --field-bg: #fffaf1;
+  --field-border: #e9cb9c;
+  --placeholder: #ab8455;
+  --accent: #c9781d;
+  --accent-2: #e8a545;
+  --accent-3: #a3620f;
+  --cta-text: #2a1604;
+  --danger-ink: #8a2c1a;
+  --danger-line: rgba(178, 58, 36, 0.35);
+  --danger-bg: rgba(178, 58, 36, 0.08);
 
   --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
     sans-serif;
+}
+
+/* --- Scuro: Champagne & Gold — segue il sistema, a meno di scelta esplicita --- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #201a10;
+    --surface: #2e2718;
+    --surface-border: #4a3d24;
+    --ink: #f5eedd;
+    --ink-muted: #b8a887;
+    --ink-faint: #a4926e;
+    --field-bg: #261f13;
+    --field-border: #52432a;
+    --placeholder: #a4926e;
+    --accent: #f0a94a;
+    --accent-2: #f7c583;
+    --accent-3: #c9781d;
+    --cta-text: #2a1604;
+    --danger-ink: #ffb7a3;
+    --danger-line: rgba(255, 138, 117, 0.4);
+    --danger-bg: rgba(255, 138, 117, 0.1);
+  }
+}
+
+/* --- Scuro: scelta esplicita dal tasto tema, vince sempre sul sistema --- */
+:root[data-theme='dark'] {
+  --bg: #201a10;
+  --surface: #2e2718;
+  --surface-border: #4a3d24;
+  --ink: #f5eedd;
+  --ink-muted: #b8a887;
+  --ink-faint: #a4926e;
+  --field-bg: #261f13;
+  --field-border: #52432a;
+  --placeholder: #a4926e;
+  --accent: #f0a94a;
+  --accent-2: #f7c583;
+  --accent-3: #c9781d;
+  --cta-text: #2a1604;
+  --danger-ink: #ffb7a3;
+  --danger-line: rgba(255, 138, 117, 0.4);
+  --danger-bg: rgba(255, 138, 117, 0.1);
 }
 
 * {
@@ -41,9 +84,36 @@ body {
      fermo a 800px anche con ~2000px di contenuto). min-height copre le
      pagine corte e lascia crescere liberamente quelle lunghe come questa. */
   min-height: 100vh;
-  background: radial-gradient(ellipse at top, var(--mn-850) 0%, var(--mn-950) 55%, #030614 100%);
-  color: var(--cream);
+  background: var(--bg);
+  color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
+}
+
+/* Freccia del <select>: un'immagine di sfondo incorporata non può leggere le
+   custom property, quindi qui vive globalmente con due varianti (chiara e
+   scura) invece che nel foglio di stile del componente — dove finirebbe
+   sotto lo scoping di Angular e perderebbe la specificità necessaria a
+   vincere sull'override scuro. Le altre proprietà del <select> restano nel
+   componente: qui si definisce solo il colore della freccia. */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23c9781d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23f0a94a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  }
+}
+
+:root[data-theme='dark'] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23f0a94a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
 }
