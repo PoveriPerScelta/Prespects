@@ -1,6 +1,15 @@
 /* Stili globali — palette "Amber Hearth" (chiaro) / "Champagne & Gold" (scuro) */
 
 :root {
+  /* Dice al browser che il tema attivo in questo momento è chiaro — è la
+     proprietà CSS gemella del <meta name="color-scheme"> in index.html
+     (quello copre l'istante prima che questo foglio sia pronto, questa è
+     la fonte di verità una volta caricato). Senza le due insieme, Samsung
+     Internet e Chrome su Android possono applicare un proprio filtro di
+     inversione euristico sopra ai nostri colori, pensando che la pagina
+     non gestisca affatto il tema scuro. */
+  color-scheme: light;
+
   /* --- Chiaro: Amber Hearth --- */
   --bg: #fbecdb;
   --surface: #fffaf3;
@@ -27,6 +36,7 @@
 /* --- Scuro: Champagne & Gold — segue il sistema, a meno di scelta esplicita --- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
+    color-scheme: dark;
     --bg: #201a10;
     --surface: #2e2718;
     --surface-border: #4a3d24;
@@ -48,6 +58,7 @@
 
 /* --- Scuro: scelta esplicita dal tasto tema, vince sempre sul sistema --- */
 :root[data-theme='dark'] {
+  color-scheme: dark;
   --bg: #201a10;
   --surface: #2e2718;
   --surface-border: #4a3d24;

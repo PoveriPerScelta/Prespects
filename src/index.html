@@ -6,6 +6,17 @@
   <meta name="description" content="Candidati per iniziare il tuo percorso di crescita personale e network marketing.">
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Dichiara esplicitamente che la pagina gestisce da sé sia il tema
+       chiaro che quello scuro. Senza questo, alcuni browser mobile (in
+       particolare Samsung Internet, ma anche Chrome su Android) applicano
+       un proprio filtro di "dark mode del sito" euristico sopra la nostra
+       pagina quando non trovano questa dichiarazione — invertendo o
+       alterando colori già pensati per entrambi i temi e producendo il
+       rendering rotto visto su Samsung. Il tag va ripetuto anche come
+       proprietà CSS "color-scheme" su :root (vedi styles.scss), che è il
+       segnale più autorevole; il meta qui copre l'istante prima che il CSS
+       sia pronto. -->
+  <meta name="color-scheme" content="light dark">
   <!-- GitHub Pages non permette di impostare header HTTP personalizzati
        (niente CSP/X-Frame-Options a livello di risposta), quindi la policy
        vive qui via meta tag — copre script/stili/font/richieste, non le
