@@ -5,26 +5,40 @@
   [attr.aria-label]="isDarkNow() ? 'Passa al tema chiaro' : 'Passa al tema scuro'"
   [attr.aria-pressed]="isDarkNow()"
 >
-  @if (isDarkNow()) {
-    <!-- Luna: siamo nel tema scuro. -->
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path
-        d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"
-        stroke="currentColor"
-        stroke-width="1.6"
-        stroke-linejoin="round"
-      />
-    </svg>
-  } @else {
-    <!-- Sole: siamo nel tema chiaro. -->
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6" />
-      <path
-        d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.4 5.6l-1.55 1.55M7.15 16.85l-1.55 1.55M18.4 18.4l-1.55-1.55M7.15 7.15 5.6 5.6"
-        stroke="currentColor"
-        stroke-width="1.6"
-        stroke-linecap="round"
-      />
-    </svg>
-  }
+  <!-- Entrambe le icone restano nel DOM e si dissolvono/ruotano l'una
+       nell'altra: con l'@if di prima l'icona veniva sostituita di scatto,
+       qui la transizione la anima davvero invece di un semplice cambio. -->
+  <svg
+    class="theme-toggle__icon"
+    [class.is-hidden]="isDarkNow()"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <!-- Sole: tema chiaro. -->
+    <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6" />
+    <path
+      d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.4 5.6l-1.55 1.55M7.15 16.85l-1.55 1.55M18.4 18.4l-1.55-1.55M7.15 7.15 5.6 5.6"
+      stroke="currentColor"
+      stroke-width="1.6"
+      stroke-linecap="round"
+    />
+  </svg>
+  <svg
+    class="theme-toggle__icon"
+    [class.is-hidden]="!isDarkNow()"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <!-- Luna: tema scuro. -->
+    <path
+      d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"
+      stroke="currentColor"
+      stroke-width="1.6"
+      stroke-linejoin="round"
+    />
+  </svg>
 </button>

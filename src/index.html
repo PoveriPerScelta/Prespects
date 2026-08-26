@@ -6,6 +6,13 @@
   <meta name="description" content="Candidati per iniziare il tuo percorso di crescita personale e network marketing.">
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- GitHub Pages non permette di impostare header HTTP personalizzati
+       (niente CSP/X-Frame-Options a livello di risposta), quindi la policy
+       vive qui via meta tag — copre script/stili/font/richieste, non le
+       direttive che il tag <meta> non supporta (es. frame-ancestors, che va
+       ignorata dai browser in questa forma). Sorgenti ammesse: il sito
+       stesso, Google Fonts per i caratteri, l'API di EmailJS per l'invio. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.emailjs.com; base-uri 'self'; object-src 'none'; form-action 'self';">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

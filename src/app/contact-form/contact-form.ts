@@ -19,6 +19,16 @@ type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
 const ETA_MINIMA = 18;
 
+/**
+ * Sotto questa soglia dal caricamento pagina, un submit è quasi certamente
+ * un bot (nessuna persona reale compila 13 campi in meno di così) — non c'è
+ * backend a cui appoggiarsi, quindi questo e la honeypot sotto sono le due
+ * difese lato client disponibili. Non fermano un attacco mirato — chi legge
+ * il sorgente le aggira in un minuto — ma azzerano lo spam automatico "a
+ * strascico", che è la minaccia reale per un form pubblico come questo.
+ */
+const SOGLIA_ANTI_BOT_MS = 3000;
+
 @Component({
   selector: 'app-contact-form',
   imports: [ReactiveFormsModule],
@@ -34,7 +44,16 @@ export class ContactForm {
   protected readonly state = signal<SubmitState>('idle');
   protected readonly mailtoFallback = signal<string>('');
 
+  /** Istante di creazione del componente, per la trappola anti-bot sul tempo. */
+  private readonly caricatoAlle = Date.now();
+
   protected readonly form = this.fb.nonNullable.group({
+    // Honeypot: invisibile a occhio umano (e saltata dagli screen reader),
+    // ma un form-filler automatico che scandaglia il DOM la trova e la
+    // compila. Nome volutamente "plausibile" ma non tra quelli che
+    // l'autocompilazione del browser riempie da sola (evita falsi positivi
+    // su utenti reali con password manager aggressivi).
+    paginaWeb: [''],
     nome: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(60)]],
     cognome: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(60)]],
     eta: this.fb.control<number | null>(null, [
@@ -124,24 +143,45 @@ export class ContactForm {
     }
 
     const v = this.form.getRawValue();
+
+    // Bot silenzioso: honeypot compilata o submit troppo rapido dal
+    // caricamento pagina. Mostriamo comunque il successo — un messaggio
+    // d'errore direbbe a un bot che è stato scoperto, senza alcun beneficio
+    // per noi — semplicemente non inviamo nulla.
+    const eTropoVeloce = Date.now() - this.caricatoAlle < SOGLIA_ANTI_BOT_MS;
+    if (v.paginaWeb || eTropoVeloce) {
+      this.state.set('success');
+      this.form.reset({ nazione: 'Italia', occupazione: '', privacy: false });
+      return;
+    }
+
     const occupazioneLabel = this.occupazioneLabel(v);
+
+    // Le mail HTML non sfuggono da sole { { } }/<...>: un candidato che
+    // scrivesse "<b>ciao</b>" nella motivazione altrimenti spezzerebbe il
+    // layout del template (o, nel peggiore dei casi, ci inserirebbe un link
+    // camuffato) nella mail che arriva a Serenella. Qui neutralizziamo i
+    // caratteri HTML sui soli campi liberi prima di passarli a EmailJS —
+    // il link mailto: di riserva non ne ha bisogno, è testo semplice.
+    const nomeSicuro = escapeHtml(v.nome);
+    const cognomeSicuro = escapeHtml(v.cognome);
 
     // Chiavi in minuscolo: devono corrispondere ai tag {{...}} usati in
     // email-template.html, il template incollato nella dashboard EmailJS.
     const templateParams = {
-      from_name: `${v.nome} ${v.cognome}`,
-      nome: v.nome,
-      cognome: v.cognome,
+      from_name: `${nomeSicuro} ${cognomeSicuro}`,
+      nome: nomeSicuro,
+      cognome: cognomeSicuro,
       eta: v.eta,
       email: v.email,
       telefono: v.telefono,
       nazione: v.nazione,
-      provincia: v.provincia,
-      citta: v.citta,
-      motivo: v.motivoInteresse,
-      ramo: v.ramoInteresse,
-      occupazione: occupazioneLabel,
-      obiettivi: v.obiettivi,
+      provincia: escapeHtml(v.provincia),
+      citta: escapeHtml(v.citta),
+      motivo: escapeHtml(v.motivoInteresse),
+      ramo: escapeHtml(v.ramoInteresse),
+      occupazione: escapeHtml(occupazioneLabel),
+      obiettivi: escapeHtml(v.obiettivi),
     };
 
     this.mailtoFallback.set(this.buildMailto(v, occupazioneLabel));
@@ -230,4 +270,20 @@ export class ContactForm {
     const subject = encodeURIComponent(`Candidatura percorso — ${v.nome} ${v.cognome}`);
     return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
   }
+}
+
+/**
+ * Neutralizza i caratteri HTML prima di mandare un testo libero dentro il
+ * template email (che li interpola così come sono, senza escaping
+ * automatico). Non è un problema di XSS in senso stretto — nessun client
+ * di posta esegue script — ma senza questo un candidato potrebbe comunque
+ * rompere il layout della mail o infilarci un link camuffato.
+ */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

@@ -10,9 +10,7 @@
 }
 
 .theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
   width: 3rem;
   height: 3rem;
   border-radius: 999px;
@@ -29,14 +27,38 @@
     color 0.2s ease;
 }
 
-.theme-toggle svg {
+.theme-toggle__icon {
+  position: absolute;
+  inset: 0;
+  margin: auto;
   width: 1.3rem;
   height: 1.3rem;
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+  transition:
+    opacity 0.3s ease,
+    transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
   /* Le icone hanno fill="none": senza questo, alcuni motori di rendering
      mobile fanno l'hit-test solo sul tratto disegnato (stroke) e non
      sull'area vuota al centro, rendendo il tap meno affidabile. Con
      pointer-events:none il tocco passa sempre dritto al <button>. */
   pointer-events: none;
+}
+
+.theme-toggle__icon.is-hidden {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle__icon {
+    transition: opacity 0.15s ease;
+    transform: none;
+  }
+
+  .theme-toggle__icon.is-hidden {
+    transform: none;
+  }
 }
 
 .theme-toggle:hover {

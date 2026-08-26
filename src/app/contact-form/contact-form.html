@@ -7,8 +7,8 @@
       <section class="success" role="status">
         <div class="success__mark" aria-hidden="true">
           <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="26" cy="26" r="25" stroke="currentColor" stroke-width="1.5" />
-            <path d="M15 27.5 22.5 35 37 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            <circle class="success__circle" cx="26" cy="26" r="25" stroke="currentColor" stroke-width="1.5" />
+            <path class="success__check" d="M15 27.5 22.5 35 37 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>
         <p class="eyebrow">Candidatura inviata</p>
@@ -33,6 +33,21 @@
       </header>
 
       <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Honeypot anti-bot: invisibile e ignorata da persone e screen
+             reader, ma un compilatore automatico che scandaglia il DOM la
+             trova e la riempie. Se arriva compilata, onSubmit() scarta la
+             candidatura in silenzio. -->
+        <div class="sr-only" aria-hidden="true">
+          <label for="paginaWeb">Non compilare questo campo</label>
+          <input
+            id="paginaWeb"
+            type="text"
+            formControlName="paginaWeb"
+            tabindex="-1"
+            autocomplete="off"
+          />
+        </div>
+
         <div class="section">
           <p class="section-title">I tuoi dati</p>
 
@@ -261,11 +276,22 @@
           </div>
         }
 
-        <button type="submit" class="submit" [disabled]="state() === 'submitting'">
+        <button
+          type="submit"
+          class="submit"
+          [class.is-locked]="form.invalid"
+          [disabled]="form.invalid || state() === 'submitting'"
+        >
           @if (state() === 'submitting') {
-            Invio in corso…
+            <span class="submit__label">Invio in corso…</span>
+          } @else if (form.invalid) {
+            <svg class="submit__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.6" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+            <span class="submit__label">Completa tutti i campi</span>
           } @else {
-            Invia la tua candidatura
+            <span class="submit__label">Invia la tua candidatura</span>
           }
         </button>
       </form>
