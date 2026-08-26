@@ -42,6 +42,10 @@
   left: -10rem;
   opacity: 0.35;
   background: radial-gradient(circle, var(--accent), transparent 60%);
+  /* Deriva lentissima e continua, per dare un minimo di vita allo sfondo
+     invece di un'immagine perfettamente ferma — così piccola (poche decine
+     di pixel) che non distrae mai da quello che conta, il form. */
+  animation: glow-drift-one 16s ease-in-out infinite;
 }
 
 .glow--two {
@@ -51,6 +55,7 @@
   right: -8rem;
   opacity: 0.4;
   background: radial-gradient(circle, var(--accent-2), transparent 60%);
+  animation: glow-drift-two 19s ease-in-out infinite;
 }
 
 .card-wrap {
@@ -62,6 +67,10 @@
 .intro {
   text-align: center;
   margin-bottom: 2.5rem;
+  /* Il blocco intero appare con una lieve dissolvenza e risalita al primo
+     caricamento — nessun timer coinvolto, l'animazione parte da sola non
+     appena l'elemento viene dipinto sullo schermo. */
+  animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .eyebrow {
@@ -112,6 +121,36 @@
   box-shadow:
     0 30px 80px -30px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  /* Solo opacità, mai uno spostamento: le singole .section dentro hanno già
+     una propria animazione di risalita (poco sotto) — se anche la card che
+     le contiene si spostasse, i due movimenti si sommerebbero risultando
+     "sballati" invece che eleganti. Un filo di ritardo rispetto a .intro fa
+     apparire il titolo prima della card, come una lettura naturale dall'alto. */
+  animation: fade-in 0.5s ease 0.1s both;
+}
+
+/* ---------- Sezioni: rivelate una a una mentre si scorre ---------- */
+/*
+  Di norma ogni .section è già interamente visibile: l'aspetto "nascosta
+  finché non entra in vista" si attiva SOLO quando lo script conferma di
+  essere pronto, aggiungendo .reveal-ready sull'host (vedi setupScrollReveal
+  in contact-form.ts) subito prima di iniziare a osservarle con
+  IntersectionObserver — nessun setTimeout/setInterval coinvolto. Così, se lo
+  script non partisse per qualunque motivo, il form resta comunque
+  interamente visibile e compilabile invece di restare vuoto in attesa di un
+  evento che potrebbe non arrivare mai.
+*/
+:host(.reveal-ready) .section {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:host(.reveal-ready) .section.is-revealed {
+  opacity: 1;
+  transform: none;
 }
 
 .section-title {
@@ -221,7 +260,8 @@ textarea {
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
-    background 0.2s ease;
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 input::placeholder,
@@ -243,6 +283,10 @@ textarea:focus {
   background: var(--surface);
   box-shadow: 0 0 0 3px var(--field-border);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  /* Lievissima risalita a fuoco, la stessa firma già usata su radio-card e
+     checkbox-box: ripetuta qui su ogni campo di testo rende il gesto
+     coerente in tutto il form invece che isolato a un paio di controlli. */
+  transform: translateY(-1px);
 }
 
 select {
@@ -654,6 +698,7 @@ textarea {
   border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
   border-radius: 22px;
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.35);
+  animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .success__mark {
@@ -756,6 +801,49 @@ textarea {
   }
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Le due sfumature di sfondo derivano ognuna per conto proprio (durata e
+   direzione diverse) così il movimento risulta organico invece che
+   sincronizzato e meccanico. */
+@keyframes glow-drift-one {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -16px) scale(1.06);
+  }
+}
+
+@keyframes glow-drift-two {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-18px, 14px) scale(1.05);
+  }
+}
+
 /* Chi ha chiesto al sistema di ridurre le animazioni non vuole nemmeno
    quelle piccole: un solo blocco per tutti i piccoli spostamenti hover
    sparsi nel foglio di stile, invece di ripeterlo ovunque. Le animazioni
@@ -768,13 +856,33 @@ textarea {
   .privacy:hover .checkbox-box,
   .checkbox-tick,
   .ghost-btn,
-  .ghost-btn:hover {
+  .ghost-btn:hover,
+  input:focus,
+  select:focus,
+  textarea:focus {
     transition: none;
     transform: none;
   }
 
   .field-error,
-  .notice-card {
+  .notice-card,
+  .intro,
+  .form,
+  .success,
+  .glow--one,
+  .glow--two {
     animation: none;
+  }
+
+  /* Con le sezioni già visibili di default (vedi sopra), qui basta
+     azzerare transizione/spostamento residuo nel caso .reveal-ready sia
+     comunque presente — non serve altro: setupScrollReveal() in
+     contact-form.ts controlla la stessa preferenza e con motion ridotto
+     non aggiunge affatto la classe, quindi questa regola è solo una rete
+     di sicurezza. */
+  :host(.reveal-ready) .section {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }

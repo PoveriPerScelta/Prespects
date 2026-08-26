@@ -1,4 +1,15 @@
-import { Component, inject, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Injector,
+  OnDestroy,
+  PLATFORM_ID,
+  afterNextRender,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
@@ -35,14 +46,20 @@ const SOGLIA_ANTI_BOT_MS = 3000;
   templateUrl: './contact-form.html',
   styleUrl: './contact-form.scss',
 })
-export class ContactForm {
+export class ContactForm implements OnDestroy {
   private readonly fb = inject(FormBuilder);
+  private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+  private readonly injector = inject(Injector);
+  private readonly platformId = inject(PLATFORM_ID);
 
   protected readonly nazioni = NAZIONI;
   protected readonly contactEmail = CONTACT_EMAIL;
   protected readonly etaMinima = ETA_MINIMA;
   protected readonly state = signal<SubmitState>('idle');
   protected readonly mailtoFallback = signal<string>('');
+
+  /** Osserva le .section per rivelarle mentre si scorre; vedi setupScrollReveal(). */
+  private revealObserver?: IntersectionObserver;
 
   /** Istante di creazione del componente, per la trappola anti-bot sul tempo. */
   private readonly caricatoAlle = Date.now();
@@ -101,6 +118,62 @@ export class ContactForm {
         }
         percorsoStudi.updateValueAndValidity();
       });
+
+    // Rivela le sezioni del form con una lieve dissolvenza+risalita mentre
+    // si scorre, invece di mostrarle già tutte pronte dall'inizio. Si
+    // riattiva ad ogni ritorno alla vista "idle" — il primo caricamento e
+    // ogni "Invia un'altra candidatura" — perché in quel momento il form
+    // torna nel DOM con sezioni nuove di zecca, mai osservate prima.
+    effect(() => {
+      if (this.state() !== 'idle' || !isPlatformBrowser(this.platformId)) return;
+      afterNextRender(() => this.setupScrollReveal(), { injector: this.injector });
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.revealObserver?.disconnect();
+  }
+
+  /**
+   * Nessun setTimeout/setInterval: IntersectionObserver segnala da solo
+   * quando una .section entra nello schermo. Le sezioni sono già visibili
+   * di default in CSS — solo dopo aver aggiunto .reveal-ready sull'host
+   * (qui sotto, subito prima di iniziare a osservare) lo stile "nascosta
+   * finché non entra in vista" si attiva davvero. Così, se questo metodo
+   * non venisse mai chiamato per qualunque motivo, il form resterebbe
+   * comunque interamente visibile invece di restare vuoto in attesa di un
+   * evento che non arriva.
+   */
+  private setupScrollReveal(): void {
+    this.revealObserver?.disconnect();
+
+    const host = this.elementRef.nativeElement;
+    const sections = host.querySelectorAll<HTMLElement>('.section');
+    if (!sections.length) return;
+
+    const prefersReducedMotion =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion || typeof IntersectionObserver !== 'function') {
+      return;
+    }
+
+    host.classList.add('reveal-ready');
+
+    this.revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
+    );
+
+    sections.forEach((section) => this.revealObserver!.observe(section));
   }
 
   protected get isLavoratore(): boolean {
