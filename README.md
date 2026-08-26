@@ -15,11 +15,11 @@ Il deploy è automatico: ogni push sul branch `main` fa partire il workflow
 il sito e lo pubblica su GitHub Pages. Non serve lanciare nessun comando
 manuale, basta:
 
-1. **Nel repository su GitHub** ([PoveriPerScelta/Prespects](https://github.com/PoveriPerScelta/Prespects))
+1. **Nel repository su GitHub** ([PoveriPerScelta/Prospects](https://github.com/PoveriPerScelta/Prospects))
    → Settings → Pages → alla voce "Build and deployment" → "Source" scegli
    **GitHub Actions** (va fatto una sola volta, la prima volta).
 2. Push su `main` → dopo qualche minuto il sito è live su
-   **https://poveriperscelta.github.io/Prespects/**.
+   **https://poveriperscelta.github.io/Prospects/**.
 
 Puoi seguire l'avanzamento del deploy nella tab **Actions** del repository.
 
