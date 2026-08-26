@@ -14,6 +14,9 @@
   width: 3rem;
   height: 3rem;
   border-radius: 999px;
+  /* Fallback prima di color-mix() per i browser che non lo supportano
+     ancora (vedi la nota più estesa in contact-form.scss). */
+  border: 1px solid var(--field-border);
   border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   background: var(--surface);
   color: var(--accent);

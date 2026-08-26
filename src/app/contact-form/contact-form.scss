@@ -97,6 +97,15 @@
   flex-direction: column;
   gap: 1.75rem;
   background: var(--surface);
+  /* Ogni coppia di dichiarazioni border/background/box-shadow qui e più
+     sotto ripete la stessa versione "piatta" prima di quella con
+     color-mix(): non è un doppione dimenticato, è il fallback per i
+     browser che non lo supportano ancora (color-mix() è recente — Samsung
+     Internet in particolare resta spesso indietro rispetto a Chrome). Un
+     browser che non capisce color-mix() scarta solo quella riga e tiene la
+     precedente; uno che lo supporta applica l'ultima, più precisa. Niente
+     @supports, il semplice ordine delle dichiarazioni basta. */
+  border: 1px solid var(--field-border);
   border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
   border-radius: 22px;
   padding: clamp(1.5rem, 4vw, 3rem);
@@ -122,11 +131,13 @@
   content: '';
   flex: 1;
   height: 1px;
+  background: linear-gradient(90deg, var(--field-border), transparent);
   background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 50%, transparent), transparent);
 }
 
 .divider {
   height: 1px;
+  background: linear-gradient(90deg, transparent, var(--field-border), transparent);
   background: linear-gradient(
     90deg,
     transparent,
@@ -230,6 +241,7 @@ select:focus,
 textarea:focus {
   border-color: var(--accent);
   background: var(--surface);
+  box-shadow: 0 0 0 3px var(--field-border);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
@@ -253,6 +265,111 @@ textarea {
   min-height: 6rem;
   line-height: 1.6;
   resize: vertical;
+}
+
+/* ---------- Campo con label "fluttuante" ---------- */
+/*
+  Invece della label fissa sopra al campo, qui la label riposa dentro al
+  campo (dove normalmente starebbe il placeholder) e sale sopra al bordo
+  solo quando il campo è a fuoco o già compilato — la stessa animazione
+  "premium" dei form Material. Tutto in puro CSS, senza JavaScript: il
+  trucco è :placeholder-shown, che è vero solo quando il campo è vuoto,
+  a prescindere dal focus. Per questo la label deve stare DOPO
+  input/textarea nell'HTML (serve il selettore ~ verso un fratello
+  successivo) — la posizione visiva la sistema comunque il position:absolute.
+*/
+.field--float {
+  position: relative;
+}
+
+.field--float input,
+.field--float select,
+.field--float textarea {
+  /* Spazio in più sopra al testo perché la label, quando è a riposo, ci
+     stia dentro senza sovrapporsi al bordo superiore del campo. */
+  padding-top: 1.35rem;
+  padding-bottom: 0.4rem;
+}
+
+.field--float textarea {
+  padding-top: 1.5rem;
+}
+
+.field--float label {
+  position: absolute;
+  left: 0.9rem;
+  top: 0.95rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  color: var(--placeholder);
+  background: transparent;
+  padding: 0 0.3rem;
+  margin-left: -0.3rem;
+  max-width: calc(100% - 1.8rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+  transform-origin: left top;
+  transition:
+    transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.field--float textarea ~ label {
+  top: 1.1rem;
+}
+
+/* Il <select> di Nazione ha sempre un valore (parte già su "Italia"): non
+   esiste per lui uno stato "vuoto" da cui far salire la label, quindi
+   invece di legarla a :placeholder-shown (che i <select> non supportano)
+   la teniamo sempre nella posizione "alzata" — così la riga resta
+   allineata con Provincia e Città, che invece salgono/scendono davvero. */
+.field--float select ~ label {
+  transform: translateY(-1.5rem) scale(0.82);
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--surface);
+}
+
+/* Il vero placeholder resta nascosto finché la label riposa sopra di lui
+   (altrimenti si sovrapporrebbero) e compare solo a fuoco, come esempio di
+   compilazione una volta che la label è già salita. */
+.field--float input::placeholder,
+.field--float textarea::placeholder {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.field--float input:focus::placeholder,
+.field--float textarea:focus::placeholder {
+  opacity: 0.75;
+}
+
+/* .field--float ripetuto due volte: alza la specificità di un gradino
+   sopra alla regola "a riposo" qui sopra, così vince sempre — a
+   prescindere dall'ordine con cui Angular concatena gli stili dei
+   componenti nel bundle finale, che si è rivelato non affidabile per un
+   pareggio di specificità (verificato: a parità di specificità vinceva la
+   regola sbagliata). Non è un trucco fragile: ripetere una classe per
+   contarla due volte è comportamento CSS standard, non un hack browser-
+   specifico. */
+.field--float.field--float input:focus ~ label,
+.field--float.field--float input:not(:placeholder-shown) ~ label,
+.field--float.field--float textarea:focus ~ label,
+.field--float.field--float textarea:not(:placeholder-shown) ~ label {
+  transform: translateY(-1.5rem) scale(0.82);
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field--float label {
+    transition: color 0.15s ease;
+  }
 }
 
 .field-error {
@@ -311,7 +428,9 @@ textarea {
 
 .radio-card.is-checked {
   border-color: var(--accent);
+  background: var(--field-bg);
   background: color-mix(in srgb, var(--accent) 12%, var(--field-bg));
+  box-shadow: inset 0 0 0 1px var(--accent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
@@ -379,6 +498,7 @@ textarea {
 .privacy-input:checked ~ .checkbox-box {
   background: linear-gradient(135deg, var(--accent-2), var(--accent) 60%, var(--accent-3));
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--field-border);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
@@ -432,6 +552,10 @@ textarea {
   margin-top: 0.15rem;
 }
 
+/* ---------- Bottone finale ----------
+   A riposo è "vuoto" (solo contorno): si riempie con l'ambra più chiara e
+   accesa della palette (--accent-2) al passaggio del mouse, con un velo
+   che scorre da sinistra invece di un semplice cambio di colore. */
 .submit {
   position: relative;
   align-self: center;
@@ -445,38 +569,34 @@ textarea {
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.04em;
-  color: var(--cta-text);
-  background: var(--accent);
-  border: 1.5px solid transparent;
+  color: var(--accent);
+  background: transparent;
+  border: 1.5px solid var(--accent);
   border-radius: 999px;
   padding: 0.95rem 2.6rem;
   cursor: pointer;
-  box-shadow: 0 15px 35px -12px color-mix(in srgb, var(--accent) 55%, transparent);
   transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
     color 0.3s ease,
+    border-color 0.3s ease,
     box-shadow 0.3s ease,
     transform 0.2s ease;
 }
 
-/* Il "riempimento" al passaggio del mouse: un velo di un tono più profondo
-   che entra da sinistra invece di un semplice cambio di colore — l'idea di
-   "riempimento" richiesta, non solo un fade. */
 .submit::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--accent-3);
+  background: var(--accent-2);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .submit__label,
 .submit__icon {
   position: relative;
   z-index: 1;
+  transition: color 0.3s ease;
 }
 
 .submit__icon {
@@ -486,8 +606,10 @@ textarea {
 }
 
 .submit:hover:not(:disabled) {
+  color: var(--cta-text);
   transform: translateY(-2px);
-  box-shadow: 0 20px 45px -14px color-mix(in srgb, var(--accent) 65%, transparent);
+  box-shadow: 0 20px 45px -14px var(--field-border);
+  box-shadow: 0 20px 45px -14px color-mix(in srgb, var(--accent-2) 65%, transparent);
 }
 
 .submit:hover:not(:disabled)::before {
@@ -498,14 +620,12 @@ textarea {
   cursor: progress;
 }
 
-/* Stato "bloccato": form incompleto. Contorno invece di riempimento pieno,
-   nessuna ombra — comunica a colpo d'occhio che non è ancora il momento di
-   premere, senza bisogno di leggere il testo. */
+/* Stato "bloccato": form incompleto. Stesso contorno del riposo ma smorzato
+   — comunica a colpo d'occhio che non è ancora il momento di premere,
+   senza bisogno di leggere il testo. */
 .submit.is-locked {
-  background: transparent;
-  border-color: var(--field-border);
   color: var(--ink-faint);
-  box-shadow: none;
+  border-color: var(--field-border);
   cursor: not-allowed;
 }
 
@@ -515,7 +635,9 @@ textarea {
 
 @media (prefers-reduced-motion: reduce) {
   .submit,
-  .submit::before {
+  .submit::before,
+  .submit__label,
+  .submit__icon {
     transition: none;
   }
 }
@@ -528,6 +650,7 @@ textarea {
   text-align: center;
   padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 4vw, 3rem);
   background: var(--surface);
+  border: 1px solid var(--field-border);
   border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
   border-radius: 22px;
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.35);
@@ -584,6 +707,7 @@ textarea {
   letter-spacing: 0.03em;
   color: var(--accent);
   background: transparent;
+  border: 1px solid var(--field-border);
   border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
   border-radius: 999px;
   padding: 0.75rem 1.75rem;
@@ -595,6 +719,7 @@ textarea {
 }
 
 .ghost-btn:hover {
+  background: var(--field-bg);
   background: color-mix(in srgb, var(--accent) 10%, transparent);
   border-color: var(--accent);
   transform: translateY(-1px);
